@@ -1,0 +1,8 @@
+services:
+  go:
+    container_name: my-go-atk
+    image: "rjvlayn/my-go-atk:latest"
+    environment:
+     TARGET_URL: "http://108.141.156.3/"
+     THRESHOLD_MS: 200
+     WORKER_COUNT: 100
