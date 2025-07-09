@@ -1,6 +1,5 @@
 services:
   go:
-    container_name: my-go-atk
     image: "rjvlayn/my-go-atk:latest"
     environment:
      TARGET_URL: "http://108.141.156.3/"
