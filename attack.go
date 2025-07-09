@@ -5,8 +5,11 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync/atomic"
 	"time"
 )
+
+var globalCounter int64 // compteur de requêtes
 
 func main() {
 	targetURL := getEnv("TARGET_URL", "")
@@ -30,14 +33,16 @@ func main() {
 				resp, err := client.Get(targetURL)
 				duration := time.Since(start)
 
+				reqNum := atomic.AddInt64(&globalCounter, 1) // incrément sécurisé
+
 				if err != nil {
-					log.Printf("❌ Worker %d: Request failed: %v", id, err)
+					log.Printf("❌ Worker %d | #%d: Request failed: %v", id, reqNum, err)
 					continue
 				}
 				resp.Body.Close()
 
 				if duration.Milliseconds() > int64(thresholdMS) {
-					log.Printf("⚠️ Worker %d: Slow response: %dms (status: %d)", id, duration.Milliseconds(), resp.StatusCode)
+					log.Printf("⚠️ Worker %d | #%d: Slow response: %dms (status: %d)", id, reqNum, duration.Milliseconds(), resp.StatusCode)
 				}
 			}
 		}(i)
